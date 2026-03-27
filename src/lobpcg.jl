@@ -1,4 +1,4 @@
-using DFTK  # TODO: remove when out-sourced
+#=using DFTK  # TODO: remove when out-sourced
 using SuiteSparse: SuiteSparse
 
 # Eigensolver utility
@@ -162,4 +162,4 @@ function solve(H::AffineDecomposition, μ, ::Nothing, lobpcg::LOBPCG)
     n_states = lobpcg.n_target + lobpcg.n_ep_extra
     Ψ₀ = Matrix(qr(randn(ComplexF64, size(H, 1), n_states)).Q)
     solve(H, μ, Ψ₀, lobpcg)
-end
+end=#
