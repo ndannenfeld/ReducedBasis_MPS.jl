@@ -25,7 +25,7 @@ include("hamiltonian_cache.jl")
 export FullDiagonalization, LOBPCG
 export solve
 include("full_diag.jl")
-include("lobpcg.jl")
+#include("lobpcg.jl")
 
 export ApproxMPO, DMRG
 export default_sweeps
