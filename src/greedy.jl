@@ -129,9 +129,9 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
         end
 
         # Construct initial guess at μ_next and run truth solve
-        Ψ_init = greedy.Ψ_init((; info..., err_grid, λ_grid, err_max, μ=μ_next),
+        Ψ_init = greedy.Ψ_init#=((; info..., err_grid, λ_grid, err_max, μ=μ_next),
                                (; H, grid, greedy, solver_truth, compressalg,
-                                solver_online))
+                                solver_online))=#
         truth = solve(H, μ_next, Ψ_init, solver_truth)
 
         # Append truth vector according to solver method
@@ -175,7 +175,7 @@ end
 function assemble(H::AffineDecomposition, grid, greedy::Greedy, solver_truth, compressalg;
                   μ_start=grid[1], callback=print_callback, kwargs...)
     info    = callback((; iteration=0, cache=(;), state=:start))
-    Ψ_init  = greedy.Ψ_init(info, (; H, grid, greedy, solver_truth, compressalg, kwargs...))
+    Ψ_init  = greedy.Ψ_init#(info, (; H, grid, greedy, solver_truth, compressalg, kwargs...))
     truth   = solve(H, μ_start, Ψ_init, solver_truth)
     BᵀB     = overlap_matrix(truth.vectors, truth.vectors)
     basis   = RBasis(truth.vectors, fill(μ_start, length(truth.vectors)), I, BᵀB, BᵀB)
