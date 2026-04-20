@@ -180,8 +180,8 @@ function solve(H::AffineDecomposition, μ, Ψ₀::Vector{MPS}, dm::DMRG)
             println("Number of DMRG sweeps has reached maximum: ", iterations)
         end
     end
-
-    (; values, vectors[1], variances, iterations, maxtruncerr)
+  vetcors=vectors[1]
+    (; values, vectors, variances, iterations, maxtruncerr)
 end
 
 solve(H::AffineDecomposition, μ, Ψ₀::MPS, dm::DMRG) = solve(H, μ, [Ψ₀], dm)
