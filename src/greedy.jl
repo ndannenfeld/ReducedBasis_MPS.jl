@@ -22,7 +22,7 @@ function estimate_error(::Residual, μ, h_cache::HamiltonianCache, basis::RBasis
     sqrt(sum_of_squares)
 end
 
-function cull(x)
+function cull(x::ComplexF64)
     if abs(x) < 1e-13
         return 0.0 + 0.0im
     elseif abs(x.im) < 1e-13
@@ -32,6 +32,15 @@ function cull(x)
     else
         return x
     end
+end
+
+function cull(x::Float64)
+    if abs(x) < 1e-13
+        return 0.0 
+    else
+        return x
+    end
+   
 end
 
 #Can I overload this for arrays and matrices?
