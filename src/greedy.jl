@@ -48,7 +48,7 @@ function cull(M::Array{T}) where {T<:Complex}
     return cull.(M)
 end
 
-function cull(M::Array{T}) where {T<:Float}
+function cull(M::Array{T}) where {T<:Real}
     return cull.(M)
 end
 
