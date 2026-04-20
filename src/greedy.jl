@@ -39,6 +39,8 @@ function cull(M::Array{T}) where {T<:Complex}
     return cull.(M)
 end
 
+
+
 function get_f_mu(S,n,grid)
     #V = Matrix(undef,length(grid[:,1]),length(grid[1,:]))
     V = Array{ComplexF64}(undef, size(grid))
@@ -160,7 +162,7 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
     info = callback(info)
     for n in (info.iteration+1):(greedy.n_truth_max)
 
-         if isposdef(cull(info.basis.metric)) !=true
+         if isposdef(cull.(info.basis.metric)) !=true
             @warn "Overlapmatrix is not positive definite"
             break
     end
