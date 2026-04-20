@@ -22,6 +22,55 @@ function estimate_error(::Residual, μ, h_cache::HamiltonianCache, basis::RBasis
     sqrt(sum_of_squares)
 end
 
+function cull(x)
+    if abs(x) < 1e-13
+        return 0.0 + 0.0im
+    elseif abs(x.im) < 1e-13
+        return real(x) + 0.0im
+    elseif abs(x.re) < 1e-13
+        return 0.0 + imag(x)*im
+    else
+        return x
+    end
+end
+
+#Can I overload this for arrays and matrices?
+function cull(M::Array{T}) where {T<:Complex}
+    return cull.(M)
+end
+
+function get_f_mu(S,n,grid)
+    #V = Matrix(undef,length(grid[:,1]),length(grid[1,:]))
+    V = Array{ComplexF64}(undef, size(grid))
+    for i in 1:length(S)
+        #the entry ocresponds to the rb function of the solution at point mu
+        V[i]=S[i][n,1]
+    end
+    return V
+end
+
+
+function calculate_LF(grid,h,metric,solver_online)
+    #we take the absolute later so we can take the inner Matricies to be real
+    SOLU = Array{Matrix{ComplexF64}}(undef, size(grid))
+    #SOLU = Matrix{Matrix{ComplexF64}}(undef, length(grid[:,1]),length(grid[1,:]))
+    metric_u =cull(metric)
+    λ_grid   = similar(grid, Vector{Float64})
+    for (idx, μ) in pairs(grid)
+                sol = solve(h, metric_u, μ, solver_online)
+                λ_grid[idx] = sol.values
+                SOLU[idx]=sol.vectors
+            end
+    SOLU = cull.(SOLU)
+    Fs = zeros(size(grid))
+    #FS = Array{ComplexF64}(undef, size(grid))
+    for i in 1:length(SOLU[1][:,1])
+        Fs+=abs.(get_f_mu(SOLU, i,grid))
+    end
+    return Fs,λ_grid
+    #return SOLU
+end
+
 """
 Greedy reduced basis assembling strategy.
 
@@ -110,17 +159,22 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
                   solver_online=FullDiagonalization(solver_truth))
     info = callback(info)
     for n in (info.iteration+1):(greedy.n_truth_max)
+
+         if isposdef(cull(get_overlaps(info.MDict))) !=true
+            @warn "Overlapmatrix is not positive definite"
+            break
+    end
+    err_grid,λ_grid=calculate_LF(grid,info.h_cache.h,info.basis.metric,solver_online)
         # Compute residual on training grid and find maximum for greedy condition
-        err_grid = similar(grid, Float64)
-        λ_grid   = similar(grid, Vector{Float64})
-        for (idx, μ) in pairs(grid)
-            sol = solve(info.h_cache.h, info.basis.metric, μ, solver_online)
-            λ_grid[idx] = sol.values
-            err_grid[idx] = estimate_error(greedy.estimator, μ, info.h_cache,
-                                           info.basis, sol)
-        end
         err_max, idx_max = findmax(err_grid)
         μ_next = grid[idx_max]
+        if n == 2
+        μ_next = grid[1]
+        else
+        μ_next = grid[idx_max]
+        end
+
+
 
         # Exit: μ_next has already been solved
         if greedy.exit_checks && μ_next ∈ info.basis.parameters
@@ -173,7 +227,7 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
 end
 
 function assemble(H::AffineDecomposition, grid, greedy::Greedy, solver_truth, compressalg;
-                  μ_start=grid[1], callback=print_callback, kwargs...)
+                  μ_start=grid[end], callback=print_callback, kwargs...)
     info    = callback((; iteration=0, cache=(;), state=:start))
     Ψ_init  = greedy.Ψ_init#(info, (; H, grid, greedy, solver_truth, compressalg, kwargs...))
     truth   = solve(H, μ_start, Ψ_init, solver_truth)
