@@ -48,6 +48,10 @@ function cull(M::Array{T}) where {T<:Complex}
     return cull.(M)
 end
 
+function cull(M::Array{T}) where {T<:Float}
+    return cull.(M)
+end
+
 
 
 function get_f_mu(S,n,grid)
