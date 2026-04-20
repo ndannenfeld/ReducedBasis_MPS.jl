@@ -151,8 +151,8 @@ function solve(H::AffineDecomposition, μ, Ψ₀::Vector{MPS}, dm::DMRG)
     observer = dm.observer()
     H_full = H(μ)
     E₁, Ψ₁ = dmrg(H_full, Ψ₀[1], dm.sweeps; observer, outputlevel=0)
-    values, vectors = [E₁,], [Ψ₁,]
-
+    values, vectors = [E₁,], Ψ₁
+   #=
     # Size of initial guess determines target multiplicity
     if length(Ψ₀) > 1 && dm.n_states > 1 && dm.tol_degeneracy > 0.0
         converging, n = true, 2
@@ -169,7 +169,7 @@ function solve(H::AffineDecomposition, μ, Ψ₀::Vector{MPS}, dm::DMRG)
             n += 1
         end
     end
-
+   =#
     variances = [abs(inner(H_full, Ψ, H_full, Ψ) - inner(Ψ', H_full, Ψ)^2) for Ψ in vectors]
     iterations = length(observer.energies)
     maxtruncerr = maximum(observer.truncerrs)
@@ -180,7 +180,6 @@ function solve(H::AffineDecomposition, μ, Ψ₀::Vector{MPS}, dm::DMRG)
             println("Number of DMRG sweeps has reached maximum: ", iterations)
         end
     end
-  vetcors=vectors[1]
     (; values, vectors, variances, iterations, maxtruncerr)
 end
 
