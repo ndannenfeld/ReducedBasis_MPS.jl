@@ -170,7 +170,7 @@ function solve(H::AffineDecomposition, μ, Ψ₀::Vector{MPS}, dm::DMRG)
         end
     end
    =#
-    variances = [abs(inner(H_full, Ψ, H_full, Ψ) - inner(Ψ', H_full, Ψ)^2) for Ψ in vectors]
+    variances = [abs(inner(H_full, Ψ, H_full, Ψ) - inner(Ψ', H_full, Ψ)^2) for Ψ in [vectors]]
     iterations = length(observer.energies)
     maxtruncerr = maximum(observer.truncerrs)
     if dm.verbose
