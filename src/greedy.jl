@@ -160,7 +160,7 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
     info = callback(info)
     for n in (info.iteration+1):(greedy.n_truth_max)
 
-         if isposdef(cull(get_overlaps(info.MDict))) !=true
+         if isposdef(cull(info.basis.metric)) !=true
             @warn "Overlapmatrix is not positive definite"
             break
     end
