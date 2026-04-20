@@ -181,7 +181,7 @@ function solve(H::AffineDecomposition, μ, Ψ₀::Vector{MPS}, dm::DMRG)
         end
     end
 
-    (; values, vectors, variances, iterations, maxtruncerr)
+    (; values, vectors[1], variances, iterations, maxtruncerr)
 end
 
 solve(H::AffineDecomposition, μ, Ψ₀::MPS, dm::DMRG) = solve(H, μ, [Ψ₀], dm)
