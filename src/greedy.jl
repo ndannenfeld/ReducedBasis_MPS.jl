@@ -209,13 +209,14 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
         ext = extend(info.basis, truth.vectors, μ_next, compressalg)
 
         # Exit: ill-conditioned BᵀB
+        #=
         metric_condition = cond(ext.basis.metric)
         if greedy.exit_checks && metric_condition > 1e2  # TODO: Global constant for max. condition?
             greedy.verbose &&
                 @warn "stopped assembly due to ill-conditioned BᵀB" metric_condition
             break
         end
-
+      =#
         # Exit: no vector was appended to basis
         if greedy.exit_checks && dimension(ext.basis) == dimension(info.basis)
             greedy.verbose && @warn "stopped assembly since new snapshot was insignificant"
