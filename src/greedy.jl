@@ -207,7 +207,7 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
 
         # Append truth vector according to solver method
         ext = extend(info.basis, truth.vectors, μ_next, compressalg)
-
+       metric_condition=1
         # Exit: ill-conditioned BᵀB
         #=
         metric_condition = cond(ext.basis.metric)
