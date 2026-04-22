@@ -185,8 +185,8 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
         μ_next = grid[idx_max]
         if n == 2
         μ_next = grid[1]
-        elseif n==3
-            μ_next=grid[Int(floor(length(grid)/2))]
+        #=elseif n==3
+            μ_next=grid[Int(floor(length(grid)/2))]=#
         else
         μ_next = grid[idx_max]
         end
