@@ -198,7 +198,7 @@ function extend(basis::RBasis, new_snapshot::AbstractVector, μ, ed::EigenDecomp
     Λ = abs.(Λ)  # Remove zero elements with negative sign
     λ_error_trunc = 0.0
     keep = 1
-    #=if !iszero(ed.cutoff)
+    if !iszero(ed.cutoff)
         λ²_psums      = reverse(cumsum(Λ.^2))  # Reverse to put largest eigenvector sum first
         λ²_errors     = @. sqrt(λ²_psums / λ²_psums[1])
         idx_trunc     = findlast(err -> err > ed.cutoff, λ²_errors)
@@ -214,10 +214,10 @@ function extend(basis::RBasis, new_snapshot::AbstractVector, μ, ed::EigenDecomp
             overlaps = overlaps[1:idx_trunc, 1:idx_trunc]
             λ_error_trunc = λ²_errors[idx_trunc + 1]
         end
-    end=#
+    end
     snapshots   = append!(copy(basis.snapshots), new_snapshot)  # TODO: use ordering of Λ
     parameters  = append!(copy(basis.parameters), fill(μ, length(new_snapshot)))
-    #vectors_new = U * Diagonal(1 ./ sqrt.(Λ))
+    vectors_new = U * Diagonal(1 ./ sqrt.(Λ))
 vectors_new = I
     (; basis=RBasis(snapshots, parameters, vectors_new,
                     overlaps, vectors_new' * overlaps * vectors_new),
