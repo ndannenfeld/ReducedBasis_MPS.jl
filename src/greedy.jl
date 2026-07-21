@@ -74,7 +74,7 @@ function calculate_LF(grid,h,metric,solver_online,basis::RBasis)
     for (idx, μ) in pairs(grid)
                 sol = solve(h, metric_u, μ, solver_online)
                 λ_grid[idx] = sol.values
-                SOLU[idx]= basis.vectors'*sol.vectors
+                SOLU[idx]= basis.vectors*sol.vectors
             end
     SOLU = cull.(SOLU)
     Fs = zeros(size(grid))
