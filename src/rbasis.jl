@@ -218,7 +218,7 @@ function extend(basis::RBasis, new_snapshot::AbstractVector, μ, ed::EigenDecomp
     snapshots   = append!(copy(basis.snapshots), new_snapshot)  # TODO: use ordering of Λ
     parameters  = append!(copy(basis.parameters), fill(μ, length(new_snapshot)))
     vectors_new = U * Diagonal(1 ./ sqrt.(Λ))
-vectors_new = I
+
     (; basis=RBasis(snapshots, parameters, vectors_new,
                     overlaps, vectors_new' * overlaps * vectors_new),
      keep, Λ, λ_error_trunc)
