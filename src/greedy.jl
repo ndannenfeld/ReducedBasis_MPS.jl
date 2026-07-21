@@ -65,7 +65,7 @@ function get_f_mu(S,n,grid)
 end
 
 
-function calculate_LF(grid,h,metric,solver_online)
+function calculate_LF(grid,h,metric,solver_online,basis::RBasis)
     #we take the absolute later so we can take the inner Matricies to be real
     SOLU = Array{Matrix{ComplexF64}}(undef, size(grid))
     #SOLU = Matrix{Matrix{ComplexF64}}(undef, length(grid[:,1]),length(grid[1,:]))
@@ -74,7 +74,7 @@ function calculate_LF(grid,h,metric,solver_online)
     for (idx, μ) in pairs(grid)
                 sol = solve(h, metric_u, μ, solver_online)
                 λ_grid[idx] = sol.values
-                SOLU[idx]=sol.vectors
+                SOLU[idx]= basis.vectors'*sol.vectors
             end
     SOLU = cull.(SOLU)
     Fs = zeros(size(grid))
@@ -179,7 +179,7 @@ function assemble(info::NamedTuple, H::AffineDecomposition, grid, greedy::Greedy
             @warn "Overlapmatrix is not positive definite"
             break
     end
-    err_grid,λ_grid=calculate_LF(grid,info.h_cache.h,info.basis.metric,solver_online)
+    err_grid,λ_grid=calculate_LF(grid,info.h_cache.h,info.basis.metric,solver_online,info.basis)
         # Compute residual on training grid and find maximum for greedy condition
         err_max, idx_max = findmax(err_grid)
         μ_next = grid[idx_max]
